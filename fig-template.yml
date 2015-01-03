@@ -103,7 +103,7 @@ postfix:
 #
 # Ejemplo de uso manual durante pruebas: 
 #
-# docker run --rm -t -i -p 10024:10024 -e MAIL_DB_USER="correo" -e MAIL_DB_PASS="correopass" -e MAIL_DB_NAME="correodb" -e POSTFIX_LINK="postfix.tld.org:10025" -e MYSQL_LINK="mysqlcorreo.tld.org:33000" -e FLUENTD_LINK="fluentd.tld.org:24224" -e VIRUS_ADMIN="tuadmin\@tld.org" -e QUARANTINE_TO="spam-cuarentena@tld.org" -e HAM_TO="archivo\@tld.org" -e MYSHOTNAME="tuhost.tld.org" -v /Apps/data/correo/vmail:/data/vmail -v /Apps/data/correo/clamav:/var/lib/clamav luispa/base-chatarrero /bin/bash
+# docker run --rm -t -i -p 10024:10024 -e MAIL_DB_USER="correo" -e MAIL_DB_PASS="correopass" -e MAIL_DB_NAME="correodb" -e POSTFIX_LINK="postfix.tld.org:10025" -e MYSQL_LINK="mysqlcorreo.tld.org:33000" -e FLUENTD_LINK="fluentd.tld.org:24224" -e VIRUS_ADMIN="tuadmin\\@tld.org" -e QUARANTINE_TO="spam-cuarentena\\@tld.org" -e HAM_TO="archivo\\@tld.org" -e MYSHOTNAME="tuhost.tld.org" -v /Apps/data/correo/vmail:/data/vmail -v /Apps/data/correo/clamav:/var/lib/clamav luispa/base-chatarrero /bin/bash
 
 chatarrero:
   image: luispa/base-chatarrero
