@@ -78,8 +78,7 @@ postfix:
     - "25:25"
     - "2525:2525"
     - "465:465"
- 
-  #  - "10025:10025"
+    - "10025:10025"
 
   volumes:
     - "/Apps/data/correo/vmail:/data/vmail"
@@ -104,7 +103,7 @@ postfix:
 #
 # Ejemplo de uso manual durante pruebas: 
 #
-# docker run --rm -t -i -p 22002:22 -p 10024:10024 -e FLUENTD_LINK=fluentd.tld.org:24224  -e MAIL_DB_USER=correo -e MAIL_DB_PASS=correopass -e MAIL_DB_NAME=correodb -e MYSQL_LINK="mysqlcorreo.tld.org:33000"  -v /Apps/data/correo/vmail:/data/vmail -v /Apps/data/correo/clamav:/var/lib/clamav luispa/base-chatarrero /bin/bash
+# docker run --rm -t -i -p 10024:10024 -e MAIL_DB_USER="correo" -e MAIL_DB_PASS="correopass" -e MAIL_DB_NAME="correodb" -e POSTFIX_LINK="postfix.tld.org:10025" -e MYSQL_LINK="mysqlcorreo.tld.org:33000" -e FLUENTD_LINK="fluentd.tld.org:24224" -e VIRUS_ADMIN="tuadmin\@tld.org" -e QUARANTINE_TO="spam-cuarentena@tld.org" -e HAM_TO="archivo\@tld.org" -e MYSHOTNAME="tuhost.tld.org" -v /Apps/data/correo/vmail:/data/vmail -v /Apps/data/correo/clamav:/var/lib/clamav luispa/base-chatarrero /bin/bash
 
 chatarrero:
   image: luispa/base-chatarrero
@@ -113,9 +112,14 @@ chatarrero:
     MAIL_DB_USER:       "correo"
     MAIL_DB_PASS:       "correopass"
     MAIL_DB_NAME:       "correodb"
+    POSTFIX_LINK:       "postfix.tld.org:10025"
     MYSQL_LINK:         "mysqlcorreo.tld.org:33000"
     FLUENTD_LINK:       "fluentd.tld.org:24224"
-  
+    VIRUS_ADMIN:        "tuadmin\@tld.org"
+    QUARANTINE_TO:      "spam-cuarentena@tld.org"
+    HAM_TO:             "archivo\@tld.org"
+    MYHOSTNAME:         "tuhost.tld.org"
+ 
   # Expongo para poder recibir correos y procesarlos
   ports:
     - "10024:10024"
@@ -144,7 +148,7 @@ chatarrero:
 #
 # Ejecutar manualmente en vez de usar "fig"
 #
-# docker run --rm -t -i -p 143:143 -p 993:993 -e FLUENTD_LINK=fluentd.tld.org.org:24224  -e MAIL_DB_USER=correo -e MAIL_DB_PASS=correopass -e MAIL_DB_NAME=correodb -e MYSQL_LINK="mysqlcorreo.tld.org:33000" -v /Apps/data/correo/vmail:/data/vmail luispa/base-courierimap /bin/bash
+# docker run --rm -t -i -p 143:143 -p 993:993 -e MAIL_DB_USER=correo -e MAIL_DB_PASS=correopass -e MAIL_DB_NAME=correodb -e MYSQL_LINK="mysqlcorreo.tld.org:33000" -e FLUENTD_LINK=fluentd.tld.org.org:24224 -v /Apps/data/correo/vmail:/data/vmail luispa/base-courierimap /bin/bash
 
 courierimap:
   image: luispa/base-courierimap

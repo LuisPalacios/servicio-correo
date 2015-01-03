@@ -1,47 +1,43 @@
 # Introducción
 
 
-Este repositorio contiene un ejemplo sobre cómo montar un servicio de correo electrónico usando Postfix, Courier-New, Spamassassin, ClamAV, Amavisd-New, montando todos los servicios apoyándose en contenedores docker. 
+Este repositorio contiene un ejemplo sobre cómo poner en marcha un servicio de correo con contenedores Docker (usando fig). Consta de un servidor SMTP con Postfix, un servidor IMAPD con Courier-New y lo que llamo el "Chatarrero" con  Spamassassin, ClamAV y Amavisd-New. 
 
-Aquí encontrarás el fichero de ejemplo fig-template.yml. Renombra a fig.yml, cambia usuarios, contraseñas, nombres de servidores y dominios para adaptarlo a tus necesidades. 
+Encontras un ejemplo de cómo unirlos todos en el fichero fig-template.yml que podrás renombrar a fig.yml, cambia usuarios, contraseñas, nombres de servidores y dominios para adaptarlo a tus necesidades. 
   
 
-    +--------------+            +------------------------------------+
-    |   rsyslogd --|----------> |    fluentd.tld.org: fluentd: 24224 |
-    |              |            +------------------------------------+
-    |  amavisd-new | 
-    |    clamav    | 
-    | spamassassin | 
-    |              | 
-    | (chatarrero) |
-    +--------------+
-          10025
-            |
-            |                   +-----------------------------------+                   
-          10024          +----> | mysqlcorreo.tld.org: mysql: 33000 |
-    +--------------+    /       +-----------------------------------+
-    |    postfix --|---/
-    |              |            +------------------------------------+
-    |   rsyslogd --|----------> |    fluentd.tld.org: fluentd: 24224 |
-    +--------------+            +------------------------------------+
+              +--------------+            +------------------------------------+
+              |   rsyslogd --|----------> |    fluentd.tld.org: fluentd: 24224 |
+              |              |            +------------------------------------+
+              |  amavisd-new | 
+              |    clamav    | 
+              | spamassassin |-- 
+              |              |  \
+              | (chatarrero) |   \
+              +--------------+   |
+               10024   |         |
+                 ^     |         |
+                 |     v          \       +-----------------------------------+                   
+                 |   10025         +----> | mysqlcorreo.tld.org: mysql: 33000 |
+              +--------------+    /       +-----------------------------------+
+              |    postfix --|---/
+     25,465 --|              |            +------------------------------------+
+              |   rsyslogd --|----------> |    fluentd.tld.org: fluentd: 24224 |
+              +--------------+            +------------------------------------+
  
  
-    +--------------+
-    |              |            +------------------------------------+
-    |   rsyslogd --|----------> |    fluentd.tld.org: fluentd: 24224 |
-    |              |            +------------------------------------+
-    |              | 
-    |  courier-imap|
-    +--------------+
-
-
-
+              +--------------+    +-----> /data/vmail
+    143,993 --| courier-imap-|---/
+              |              |            +------------------------------------+
+              |   rsyslogd --|----------> |    fluentd.tld.org: fluentd: 24224 |
+              |              |            +------------------------------------+
+              +--------------+
 
 
 
 # Instalación
 
-Se apoya en [Docker](https://www.docker.com/) y [fig](http://www.fig.sh/index.html). En el fichero fig-template.yml tienes un ejemplo con varios contenedores. Las imágenes que utilizo las encontrarás aquí: 
+Se apoya en [Docker](https://www.docker.com/) y [fig](http://www.fig.sh/index.html). Las imágenes que utilizo son las siguientes:
 
 * GitHub [base-postfix](https://github.com/LuisPalacios/base-postfix)
 * GitHub [base-chatarrero](https://github.com/LuisPalacios/base-chatarrero)
