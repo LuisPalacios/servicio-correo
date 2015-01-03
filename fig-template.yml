@@ -1,0 +1,169 @@
+#
+#  Servicio de correo electrónico en contenedores docker
+#
+#
+#  Este es un fichero de ejemplo fig-template.yml, renombra a fig.yml, cambia usuarios, 
+#  contraseñas, nombres de servidores y dominios para adaptarlo a tus necesidades. 
+#  
+#
+#   +--------------+            +------------------------------------+
+#   |   rsyslogd --|----------> |    fluentd.tld.org: fluentd: 24224 |
+#   |              |            +------------------------------------+
+#   |  amavisd-new | 
+#   |    clamav    | 
+#   | spamassassin | 
+#   |              | 
+#   | (chatarrero) |
+#   +--------------+
+#         10025
+#           |
+#           |                   +-----------------------------------+                   
+#         10024          +----> | mysqlcorreo.tld.org: mysql: 33000 |
+#   +--------------+    /       +-----------------------------------+
+#   |    postfix --|---/
+#   |              |            +------------------------------------+
+#   |   rsyslogd --|----------> |    fluentd.tld.org: fluentd: 24224 |
+#   +--------------+            +------------------------------------+
+#
+#
+#   +--------------+
+#   |              |            +------------------------------------+
+#   |   rsyslogd --|----------> |    fluentd.tld.org: fluentd: 24224 |
+#   |              |            +------------------------------------+
+#   |              | 
+#   |  courier-imap|
+#   +--------------+
+#
+#
+
+
+
+##  ===========================================================================
+#   postfix
+#
+#  Contenedor con el servicio "postfix" para el envío y recepción de correo 
+#  Está configurado para consultar la base de datos en un servidor remoto mysql
+#  y para enviar logs a un agregador fluentd remoto. 
+#
+#           
+#                               +-----------------------------------+                   
+#                        +----> | mysqlcorreo.tld.org: mysql: 33000 |
+#   +--------------+    /       +-----------------------------------+
+#   |    postfix --|---/
+#   |              |            +------------------------------------+
+#   |   rsyslogd --|----------> |    fluentd.tld.org: fluentd: 24224 |
+#   +--------------+            +------------------------------------+
+#
+#
+# Ejemplo de uso manual durante pruebas: 
+#
+# docker run --rm -t -i -e SERVICE_POSTMASTER="tu-usuario@tld.org" -e FLUENTD_LINK=fluentd.tld.org:24224 -e CHATARRERO_LINK=chatarrero.tld.org:10024 -e SERVICE_MYHOSTNAME=postfix.tld.org  -e SERVICE_MYDOMAIN=tld.org  -e MAIL_DB_USER=correo -e MAIL_DB_PASS=correopass -e MAIL_DB_NAME=correodb -e MYSQL_LINK="mysqlcorreo.tld.org:33000" -p 25:25 -p 465:465 -v /Apps/data/correo/vmail:/data/vmail luispa/base-postfix /bin/bash
+
+postfix:
+  image: luispa/base-postfix
+  
+  environment: 
+    SERVICE_POSTMASTER: "tu-usuario@tld.org"
+    SERVICE_MYHOSTNAME: "postfix.tld.org"
+    SERVICE_MYDOMAIN:   "tld.org"
+    MAIL_DB_USER:       "correo"
+    MAIL_DB_PASS:       "correopass"
+    MAIL_DB_NAME:       "correodb"
+    MYSQL_LINK:         "mysqlcorreo.tld.org:33000"
+    CHATARRERO_LINK:    "chatarrero.tld.org:10024"
+    FLUENTD_LINK:       "fluentd.tld.org:24224"
+  
+  # Expongo para poder mandar y recibir correos
+  ports:
+    - "25:25"
+    - "2525:2525"
+    - "465:465"
+ 
+  #  - "10025:10025"
+
+  volumes:
+    - "/Apps/data/correo/vmail:/data/vmail"
+    - "/etc/localtime:/etc/localtime:ro"
+
+  command: supervisord -n -c /etc/supervisor/supervisord.conf
+
+
+
+##  ===========================================================================
+#   amavisd-new + clamav + spamassassin
+#
+#    10024 +---------------+ 
+#  ------->|  amavisd-new  |
+#          |    clamav     |   
+#          |  spamassassin |   
+#  <-------|               |
+#  10025   |               |     
+#          |               |   
+#          |   rsyslogd  --|---> contenedor fluentd
+#          +---------------+     
+#
+# Ejemplo de uso manual durante pruebas: 
+#
+# docker run --rm -t -i -p 22002:22 -p 10024:10024 -e FLUENTD_LINK=fluentd.tld.org:24224  -e MAIL_DB_USER=correo -e MAIL_DB_PASS=correopass -e MAIL_DB_NAME=correodb -e MYSQL_LINK="mysqlcorreo.tld.org:33000"  -v /Apps/data/correo/vmail:/data/vmail -v /Apps/data/correo/clamav:/var/lib/clamav luispa/base-chatarrero /bin/bash
+
+chatarrero:
+  image: luispa/base-chatarrero
+  
+  environment: 
+    MAIL_DB_USER:       "correo"
+    MAIL_DB_PASS:       "correopass"
+    MAIL_DB_NAME:       "correodb"
+    MYSQL_LINK:         "mysqlcorreo.tld.org:33000"
+    FLUENTD_LINK:       "fluentd.tld.org:24224"
+  
+  # Expongo para poder recibir correos y procesarlos
+  ports:
+    - "10024:10024"
+
+  volumes:
+    - "/Apps/data/correo/vmail:/data/vmail"
+    - "/Apps/data/correo/clamav:/var/lib/clamav"
+    - "/etc/localtime:/etc/localtime:ro"
+
+  command: supervisord -n -c /etc/supervisor/supervisord.conf
+
+
+
+##  ===========================================================================
+#   courier-imap y courier-imap-ssl
+#
+#  Contenedor con el servicio "courier-imap" que permite a clientes imap acceder
+#  a sus correos
+#
+#
+#    143/993 +---------------+ 
+#  --------->|  amavisd-new -|---> /data/vmail
+#            |               |   
+#            |   rsyslogd   -|---> contenedor fluentd   
+#            +---------------+     
+#
+# Ejecutar manualmente en vez de usar "fig"
+#
+# docker run --rm -t -i -p 143:143 -p 993:993 -e FLUENTD_LINK=fluentd.tld.org.org:24224  -e MAIL_DB_USER=correo -e MAIL_DB_PASS=correopass -e MAIL_DB_NAME=correodb -e MYSQL_LINK="mysqlcorreo.tld.org:33000" -v /Apps/data/correo/vmail:/data/vmail luispa/base-courierimap /bin/bash
+
+courierimap:
+  image: luispa/base-courierimap
+  
+  environment: 
+    MAIL_DB_USER:       "correo"
+    MAIL_DB_PASS:       "correopass"
+    MAIL_DB_NAME:       "correodb"
+    MYSQL_LINK:         "mysqlcorreo.tld.org:33000"
+    FLUENTD_LINK:       "fluentd.tld.org:24224"
+  
+  # Expongo para que puedan acceder clientes imap
+  #
+  ports:
+    - "143:143"
+    - "993:993"
+
+  volumes:
+    - "/Apps/data/correo/vmail:/data/vmail"
+    - "/etc/localtime:/etc/localtime:ro"
+
+  command: supervisord -n -c /etc/supervisor/supervisord.conf
