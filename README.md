@@ -33,6 +33,7 @@ Encontras un ejemplo de cómo unirlos todos en el fichero fig-template.yml que p
               |              |            +------------------------------------+
               +--------------+
 
+Consulta este [apunte técnico sobre varios servicios en contenedores Docker](http://www.luispa.com/?p=172) para acceder a otros contenedores Docker y fuentes en GitHub y entender mejor este ejemplo.
 
 
 # Instalación
