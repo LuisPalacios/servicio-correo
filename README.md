@@ -32,6 +32,13 @@ Encontras un ejemplo de cómo unirlos todos en el fichero fig-template.yml que p
               |   rsyslogd --|----------> |    fluentd.tld.org: fluentd: 24224 |
               |              |            +------------------------------------+
               +--------------+
+ 
+              +--------------+ 
+            --| imapfilter  -|---> (Conecta con múltiples cuentas vía IMAP)
+              |              |            +------------------------------------+
+              |   rsyslogd --|----------> |    fluentd.tld.org: fluentd: 24224 |
+              |              |            +------------------------------------+
+              +--------------+
 
 Consulta este [apunte técnico sobre varios servicios en contenedores Docker](http://www.luispa.com/?p=172) para acceder a otros contenedores Docker y fuentes en GitHub y entender mejor este ejemplo.
 
@@ -43,6 +50,7 @@ Se apoya en [Docker](https://www.docker.com/) y [fig](http://www.fig.sh/index.ht
 * GitHub [base-postfix](https://github.com/LuisPalacios/base-postfix)
 * GitHub [base-chatarrero](https://github.com/LuisPalacios/base-chatarrero)
 * GitHub [base-courierimap](https://github.com/LuisPalacios/base-courierimap)
+* GitHub [base-imapfilter](https://github.com/LuisPalacios/base-imapfilter)
 * GitHub [base-mysql](https://github.com/LuisPalacios/base-mysql)
 * GitHub [base-fluentd](https://github.com/LuisPalacios/base-fluentd)
 * GitHub [base-eskibana](https://github.com/LuisPalacios/base-eskibana)

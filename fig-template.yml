@@ -171,3 +171,32 @@ courierimap:
     - "/etc/localtime:/etc/localtime:ro"
 
   command: supervisord -n -c /etc/supervisor/supervisord.conf
+
+
+##  ===========================================================================
+#   imapfilter
+#
+#     +---------------+ 
+#     | imapfilter -----> Servidores IMAP
+#     |               |   
+#     |   rsyslogd   -|---> fluentd container (opcional)   
+#     +---------------+     
+#
+# Ejecutar manualmente en vez de usar "fig"
+#
+# docker run --rm -t -i -e IMAPFILTER_INSTANCIAS="personal, trabajo" -v /Apps/data/correo/imapfilter/:/root/.imapfilter/ luispa/base-imapfilter /bin/bash
+#
+
+imapfilter:
+  image: luispa/base-imapfilter
+  
+  environment: 
+    IMAPFILTER_INSTANCIAS:  "personal, trabajo"
+    FLUENTD_LINK:           "fluentd.tld.org:24224"
+  
+  volumes:
+    - "/Apps/data/correo/imapfilter/:/root/.imapfilter/"
+    - "/etc/localtime:/etc/localtime:ro"
+
+  command: supervisord -n -c /etc/supervisor/supervisord.conf
+
