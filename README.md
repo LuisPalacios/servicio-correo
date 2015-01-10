@@ -55,6 +55,11 @@ Se apoya en [Docker](https://www.docker.com/) y [fig](http://www.fig.sh/index.ht
 * GitHub [base-fluentd](https://github.com/LuisPalacios/base-fluentd)
 * GitHub [base-eskibana](https://github.com/LuisPalacios/base-eskibana)
 
+Otro proyecto relacionado que puede interesarte es un contenedor con un cliente WebMail
+
+* GitHub [base-roundcube](https://github.com/LuisPalacios/base-roundcube)
+
+
 Para instalar y crear los contenedores haz un clone en tu Host
 
     $  git clone https://github.com/LuisPalacios/servicio-correo.git
