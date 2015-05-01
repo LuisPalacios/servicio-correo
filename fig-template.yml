@@ -82,7 +82,7 @@ postfix:
 
   volumes:
     - "/Apps/data/correo/vmail:/data/vmail"
-    - "/etc/localtime:/etc/localtime:ro"
+    - "/Apps/data/tz:/config/tz"
 
   command: supervisord -n -c /etc/supervisor/supervisord.conf
 
@@ -127,7 +127,7 @@ chatarrero:
   volumes:
     - "/Apps/data/correo/vmail:/data/vmail"
     - "/Apps/data/correo/clamav:/var/lib/clamav"
-    - "/etc/localtime:/etc/localtime:ro"
+    - "/Apps/data/tz:/config/tz"
 
   command: supervisord -n -c /etc/supervisor/supervisord.conf
 
@@ -168,7 +168,7 @@ courierimap:
 
   volumes:
     - "/Apps/data/correo/vmail:/data/vmail"
-    - "/etc/localtime:/etc/localtime:ro"
+    - "/Apps/data/tz:/config/tz"
 
   command: supervisord -n -c /etc/supervisor/supervisord.conf
 
@@ -196,7 +196,7 @@ imapfilter:
   
   volumes:
     - "/Apps/data/correo/imapfilter/:/root/.imapfilter/"
-    - "/etc/localtime:/etc/localtime:ro"
+    - "/Apps/data/tz:/config/tz"
 
   command: supervisord -n -c /etc/supervisor/supervisord.conf
 
